@@ -2,9 +2,10 @@ use crate::models::User;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{EncodingKey, Header, encode};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 // JWT payload; token_type distinguishes access from refresh tokens.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct Claims {
     pub sub: String,
     pub exp: usize,
@@ -12,33 +13,33 @@ pub struct Claims {
 }
 
 // Request bodies for the auth endpoints.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, ToSchema)]
 pub struct Login {
     pub email: String,
     pub password: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, ToSchema)]
 pub struct Register {
     pub name: String,
     pub email: String,
     pub password: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, ToSchema)]
 pub struct ChangePassword {
     pub user_id: String,
     pub old_password: String,
     pub new_password: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, ToSchema)]
 pub struct ForgetPassword {
     pub email: String,
 }
 
 // Successful auth response carrying both JWTs.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, ToSchema)]
 pub struct AuthResponse {
     pub access: String,
     pub refresh: String,

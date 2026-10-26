@@ -1,8 +1,9 @@
 use crate::enums::Sex;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 // Full user record as stored in the database.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, ToSchema)]
 pub struct User {
     pub name: Option<String>,
     pub username: String,
@@ -14,7 +15,7 @@ pub struct User {
 }
 
 // Fields allowed to change on an existing user.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, ToSchema)]
 pub struct UpdateUser {
     pub name: Option<String>,
     pub username: String,
@@ -25,7 +26,7 @@ pub struct UpdateUser {
 }
 
 // Public user shape; deliberately excludes the password hash.
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, ToSchema)]
 pub struct UserResponse {
     pub name: Option<String>,
     pub username: String,

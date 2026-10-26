@@ -1,8 +1,9 @@
 use crate::enums::ActionType;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 // One-time verification record for a pending auth action.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, ToSchema)]
 pub struct Validation {
     pub email: Option<String>,
     pub user_id: Option<String>,
@@ -12,7 +13,7 @@ pub struct Validation {
 }
 
 // Body for submitting a code back for verification.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct CheckValidation {
     pub code: String,
 }

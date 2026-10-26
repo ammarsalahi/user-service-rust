@@ -3,6 +3,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
+use utoipa::OpenApi;
 
 use crate::{
     common::DBState,
@@ -13,6 +14,17 @@ use crate::{
 };
 
 // Create a new user.
+#[utoipa::path(
+    post,
+    path = "/users",
+    request_body = User,
+    responses(
+        (status = 200, description = "User created successfully", body = UserResponse),
+        (status = 400, description = "Invalid input"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "users"
+)]
 pub async fn create_user(
     State(db): DBState,
     Json(data): Json<User>,
@@ -24,6 +36,21 @@ pub async fn create_user(
 }
 
 // Update an existing user.
+#[utoipa::path(
+    put,
+    path = "/users/{id}",
+    params(
+        ("id" = String, Path, description = "User ID")
+    ),
+    request_body = UpdateUser,
+    responses(
+        (status = 200, description = "User updated successfully", body = Option<UserResponse>),
+        (status = 400, description = "Invalid input"),
+        (status = 404, description = "User not found"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "users"
+)]
 pub async fn update_user(
     State(db): DBState,
     Path(id): Path<String>,
@@ -36,6 +63,19 @@ pub async fn update_user(
 }
 
 // Get a user by ID.
+#[utoipa::path(
+    get,
+    path = "/users/{id}",
+    params(
+        ("id" = String, Path, description = "User ID")
+    ),
+    responses(
+        (status = 200, description = "User found", body = UserResponse),
+        (status = 404, description = "User not found"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "users"
+)]
 pub async fn detail_user(
     State(db): DBState,
     Path(id): Path<String>,
@@ -51,6 +91,19 @@ pub async fn detail_user(
 }
 
 // Delete a user by ID.
+#[utoipa::path(
+    delete,
+    path = "/users/{id}",
+    params(
+        ("id" = String, Path, description = "User ID")
+    ),
+    responses(
+        (status = 204, description = "User deleted successfully"),
+        (status = 404, description = "User not found"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "users"
+)]
 pub async fn delete_user(State(db): DBState, Path(id): Path<String>) -> Result<StatusCode, Error> {
     let repo = UserRepository::new(db);
     let is_deleted = repo.delete(&id).await?;
@@ -63,6 +116,15 @@ pub async fn delete_user(State(db): DBState, Path(id): Path<String>) -> Result<S
 }
 
 // List all users.
+#[utoipa::path(
+    get,
+    path = "/users",
+    responses(
+        (status = 200, description = "List of users", body = Vec<UserResponse>),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "users"
+)]
 pub async fn list_users(State(db): DBState) -> Result<Json<Vec<UserResponse>>, Error> {
     let repo = UserRepository::new(db);
     let users = repo.read_all().await?;

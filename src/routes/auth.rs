@@ -1,8 +1,21 @@
 use axum::{Json, extract::State, http::StatusCode};
+use utoipa::OpenApi;
 
 use crate::{common::DBState, error::Error, models::*, repositories::AuthRepository};
 
 /// POST /auth/login
+#[utoipa::path(
+    post,
+    path = "/auth/login",
+    request_body = Login,
+    responses(
+        (status = 200, description = "Login successful", body = AuthResponse),
+        (status = 400, description = "Invalid input"),
+        (status = 401, description = "Invalid credentials"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "auth"
+)]
 pub async fn login(
     State(db): DBState,
     Json(data): Json<Login>,
@@ -29,6 +42,17 @@ pub async fn login(
 }
 
 /// POST /auth/register
+#[utoipa::path(
+    post,
+    path = "/auth/register",
+    request_body = Register,
+    responses(
+        (status = 200, description = "Registration successful", body = AuthResponse),
+        (status = 400, description = "Invalid input"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "auth"
+)]
 pub async fn register(
     State(db): DBState,
     Json(data): Json<Register>,
@@ -57,6 +81,17 @@ pub async fn register(
 }
 
 /// POST /auth/forget-password
+#[utoipa::path(
+    post,
+    path = "/auth/forget-password",
+    request_body = ForgetPassword,
+    responses(
+        (status = 202, description = "Password reset requested"),
+        (status = 400, description = "Invalid input"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "auth"
+)]
 pub async fn forget_password(
     State(db): DBState,
     Json(data): Json<ForgetPassword>,
@@ -76,6 +111,18 @@ pub async fn forget_password(
 }
 
 /// POST /auth/change-password
+#[utoipa::path(
+    post,
+    path = "/auth/change-password",
+    request_body = ChangePassword,
+    responses(
+        (status = 204, description = "Password changed successfully"),
+        (status = 400, description = "Invalid input"),
+        (status = 404, description = "User not found"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "auth"
+)]
 pub async fn change_password(
     State(db): DBState,
     Json(data): Json<ChangePassword>,
@@ -111,6 +158,18 @@ pub async fn change_password(
 /// }
 ///
 /// Returns 200 if the code exists, or 404 if it does not.
+#[utoipa::path(
+    post,
+    path = "/auth/validation/check",
+    request_body = CheckValidation,
+    responses(
+        (status = 200, description = "Validation code is valid"),
+        (status = 400, description = "Invalid input"),
+        (status = 404, description = "Invalid validation code"),
+        (status = 500, description = "Internal server error")
+    ),
+    tag = "auth"
+)]
 pub async fn check_validation(
     State(db): DBState,
     Json(data): Json<CheckValidation>,
