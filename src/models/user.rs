@@ -1,6 +1,7 @@
 use crate::enums::Sex;
 use serde::{Deserialize, Serialize};
 
+// Full user record as stored in the database.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct User {
     pub name: Option<String>,
@@ -12,6 +13,7 @@ pub struct User {
     pub is_confirmed: Option<bool>,
 }
 
+// Fields allowed to change on an existing user.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct UpdateUser {
     pub name: Option<String>,
@@ -22,6 +24,7 @@ pub struct UpdateUser {
     pub is_confirmed: Option<bool>,
 }
 
+// Public user shape; deliberately excludes the password hash.
 #[derive(Debug, Serialize, Clone)]
 pub struct UserResponse {
     pub name: Option<String>,
@@ -32,6 +35,7 @@ pub struct UserResponse {
     pub is_confirmed: Option<bool>,
 }
 
+// Strip sensitive fields when converting to the public shape.
 impl From<User> for UserResponse {
     fn from(user: User) -> Self {
         Self {
