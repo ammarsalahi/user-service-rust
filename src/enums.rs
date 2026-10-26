@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+/// User's gender, stored directly on the user record.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum Sex {
     Male,
@@ -7,8 +8,9 @@ pub enum Sex {
     Other,
 }
 
+/// Kind of verification flow; the String carries the target email.
 #[derive(Debug, Deserialize, Serialize, Clone)]
-pub enum ValidationType {
+pub enum ActionType {
     Register(String),
     ForgetPassword(String),
 }
