@@ -3,7 +3,6 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use utoipa::OpenApi;
 
 use crate::{
     common::DBState, error::Error, models::Validation, repositories::ValidationRepository,

@@ -5,9 +5,9 @@ use axum::{
 
 use crate::common::DB;
 
-mod auth;
-mod user;
-mod validation;
+pub mod auth;
+pub mod user;
+pub mod validation;
 
 // Auth endpoints: login, register, and password flows.
 pub fn auth_routes() -> Router<DB> {
@@ -24,7 +24,7 @@ pub fn user_routes() -> Router<DB> {
         .route("/users", post(user::create_user).get(user::list_users))
         .route(
             "/users/{id}",
-            get(user::delete_user)
+            get(user::detail_user)
                 .put(user::update_user)
                 .delete(user::delete_user),
         )

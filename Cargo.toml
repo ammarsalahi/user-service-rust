@@ -14,5 +14,5 @@ rand = "0.8"
 jsonwebtoken = "9"
 chrono = { version = "0.4", features = ["serde"] }
 argon2 = "0.5"
-utoipa = { version = "5", features = ["axum_extras"] }
-utoipa-swagger-ui = { version = "8", features = ["axum"] }
+utoipa = { version = "6", features = ["axum_extras"] }
+utoipa-swagger-ui = { version = "10", features = ["axum"] }

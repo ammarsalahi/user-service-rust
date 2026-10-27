@@ -1,5 +1,4 @@
 use axum::{Json, extract::State, http::StatusCode};
-use utoipa::OpenApi;
 
 use crate::{common::DBState, error::Error, models::*, repositories::AuthRepository};
 
