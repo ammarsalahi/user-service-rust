@@ -1,0 +1,30 @@
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:latest
+    command: start --log info --user root --pass root --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - surrealdb_data:/var/lib/surrealdb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - RUST_LOG=info
+    depends_on:
+      surrealdb:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  surrealdb_data:
