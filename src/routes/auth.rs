@@ -34,7 +34,7 @@ pub async fn login(
 
     // AuthResponse must exclude the user's password hash.
     let response = AuthResponse::from(user).map_err(|_| {
-        Error::InternalServerError("Failed to generate authentication tokens".into())
+        Error::Internal("Failed to generate authentication tokens".into())
     })?;
 
     Ok(Json(response))
@@ -73,7 +73,7 @@ pub async fn register(
     let user = repository.register(data).await?;
 
     let response = AuthResponse::from(user).map_err(|_| {
-        Error::InternalServerError("Failed to generate authentication tokens".into())
+        Error::Internal("Failed to generate authentication tokens".into())
     })?;
 
     Ok(Json(response))

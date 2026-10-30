@@ -29,7 +29,7 @@ impl DBActions for ValidationRepository {
         let validation: Option<Validation> = self.db.create("validation").content(data).await?;
 
         validation
-            .ok_or_else(|| Error::InternalServerError("Failed to create validation".to_string()))
+            .ok_or_else(|| Error::Internal("Failed to create validation".to_string()))
     }
 
     async fn update(&self, id: &str, mut data: Self::Update) -> Result<Option<Self::Output>, Error> {

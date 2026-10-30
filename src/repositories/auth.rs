@@ -26,13 +26,13 @@ impl AuthRepository {
         Argon2::default()
             .hash_password(password.as_bytes(), &salt)
             .map(|hash| hash.to_string())
-            .map_err(|_| Error::InternalServerError("Failed to hash password".to_string()))
+            .map_err(|_| Error::Internal("Failed to hash password".to_string()))
     }
 
     /// Verify a plaintext password against its Argon2 hash.
     fn verify_password(password: &str, password_hash: &str) -> Result<bool, Error> {
         let parsed_hash = PasswordHash::new(password_hash)
-            .map_err(|_| Error::InternalServerError("Invalid stored password hash".to_string()))?;
+            .map_err(|_| Error::Internal("Invalid stored password hash".to_string()))?;
 
         Ok(Argon2::default()
             .verify_password(password.as_bytes(), &parsed_hash)
@@ -70,7 +70,7 @@ impl AuthRepository {
 
         let created_user: Option<User> = self.db.create("user").content(user).await?;
 
-        created_user.ok_or_else(|| Error::InternalServerError("Failed to create user".to_string()))
+        created_user.ok_or_else(|| Error::Internal("Failed to create user".to_string()))
     }
 
     /// Authenticate a confirmed user.

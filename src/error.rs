@@ -10,10 +10,10 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("Database Error: {0}")]
-    Database(#[from] surrealdb::Error),
+    Database(Box<surrealdb::Error>),
 
     #[error("Internal Server Error: {0}")]
-    InternalServerError(String),
+    Internal(String),
 
     #[error("Not Found: {0}")]
     NotFound(String),
@@ -23,6 +23,12 @@ pub enum Error {
 
     #[error("Invalid credentials")]
     InvalidCredentials,
+}
+
+impl From<surrealdb::Error> for Error {
+    fn from(err: surrealdb::Error) -> Self {
+        Self::Database(Box::new(err))
+    }
 }
 
 // Convert any error into a JSON response with the right status code.
@@ -38,7 +44,7 @@ impl IntoResponse for Error {
                 )
             }
 
-            Self::InternalServerError(message) => {
+            Self::Internal(message) => {
                 eprintln!("Internal server error: {message}");
 
                 (

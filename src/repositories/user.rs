@@ -26,7 +26,7 @@ impl DBActions for UserRepository {
         let user: Option<User> = self.db.create("user").content(data).await?;
 
         let user =
-            user.ok_or_else(|| Error::InternalServerError("Failed to create user".to_string()))?;
+            user.ok_or_else(|| Error::Internal("Failed to create user".to_string()))?;
 
         Ok(UserResponse::from(user))
     }
