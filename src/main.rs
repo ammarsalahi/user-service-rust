@@ -64,20 +64,32 @@ struct ApiDoc;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Connect to SurrealDB.
-    let db: Surreal<surrealdb::engine::any::Any> = connect("ws://127.0.0.1:8000").await?;
+    // Environment configuration
+    let surreal_url =
+        std::env::var("SURREAL_URL").unwrap_or_else(|_| "ws://localhost:8000".to_string());
 
-    // Authenticate with SurrealDB.
+    let surreal_user = std::env::var("SURREAL_USER").unwrap_or_else(|_| "root".to_string());
+
+    let surreal_password = std::env::var("SURREAL_PASSWORD").unwrap_or_else(|_| "root".to_string());
+
+    let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+
+    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
+
+    // Connect to SurrealDB
+    let db: Surreal<surrealdb::engine::any::Any> = connect(&surreal_url).await?;
+
+    // Authenticate
     db.signin(Root {
-        username: "root",
-        password: "root",
+        username: &surreal_user,
+        password: &surreal_password,
     })
     .await?;
 
-    // Select the namespace and database.
+    // Select namespace and database
     db.use_ns("app").use_db("main").await?;
 
-    // Configure the application routes.
+    // Configure application routes
     let app: Router = Router::new()
         .merge(auth_routes())
         .merge(user_routes())
@@ -85,11 +97,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(SwaggerUi::new("/swagger").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .with_state(db);
 
-    // Start the HTTP server.
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
+    // Start HTTP server
+    let address = format!("{host}:{port}");
+    let listener = tokio::net::TcpListener::bind(&address).await?;
 
-    println!("Server running at http://localhost:3000");
-    println!("Swagger UI available at http://localhost:3000/swagger");
+    println!("Server running at http://{address}");
+    println!("Swagger UI available at http://{address}/swagger");
 
     axum::serve(listener, app).await?;
 

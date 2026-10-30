@@ -1,22 +1,61 @@
-FROM rust:1.83 AS builder
+# ==========================================
+# Builder
+# ==========================================
+FROM rust:1.98 AS builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        pkg-config \
+        libssl-dev \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
+# Configure ITO Rust mirror
+RUN mkdir -p /usr/local/cargo
+
+# RUN cat > /usr/local/cargo/config.toml <<'EOF'
+# [source.crates-io]
+# replace-with = "ito-mirror"
+
+# [source.ito-mirror]
+# registry = "sparse+https://archive.ito.gov.ir/rust/"
+# EOF
+
+# Copy dependency manifests
 COPY Cargo.toml Cargo.lock ./
-RUN mkdir src && echo "fn main() {}" > src/main.rs && cargo build --release && rm -rf src
 
+# Cache dependencies
+RUN mkdir -p src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build --release && \
+    rm -rf src
+
+# Copy complete project
 COPY . .
+
+# Build application
 RUN cargo build --release
 
-FROM debian:bookworm-slim
 
-RUN apt-get update && apt-get install -y ca-certificates libssl3 && rm -rf /var/lib/apt/lists/*
+# ==========================================
+# Runtime
+# ==========================================
+FROM debian:bookworm-slim AS runtime
+
+# Install runtime dependencies
+# RUN apt-get update && \
+#     apt-get install -y --no-install-recommends \
+#         ca-certificates \
+#         libssl3 && \
+#     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY --from=builder /app/target/release/user-service-rust .
+# Copy compiled binary
+COPY --from=builder /app/target/release/user-service-rust ./user-service-rust
 
 EXPOSE 3000
 
