@@ -14,7 +14,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure ITO Rust mirror
-RUN mkdir -p /usr/local/cargo
+# RUN mkdir -p /usr/local/cargo
 
 # RUN cat > /usr/local/cargo/config.toml <<'EOF'
 # [source.crates-io]
@@ -37,7 +37,12 @@ RUN mkdir -p src && \
 COPY . .
 
 # Build application
-RUN cargo build --release
+# `touch` is required: COPY preserves the host mtimes of the sources, which can be
+# older than the cached artifacts left by the dummy build above. Cargo compares
+# mtimes, would consider the crate fresh, and silently keep the stub binary.
+RUN find src -name '*.rs' -exec touch {} + && \
+    rm -f target/release/user-service-rust && \
+    cargo build --release
 
 
 # ==========================================

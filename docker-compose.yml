@@ -1,6 +1,8 @@
 services:
   surrealdb:
-    image: surrealdb/surrealdb:latest
+    # Must stay on 2.x: the `surrealdb` crate is locked to 2.7.0 and cannot talk to
+    # a 3.x server over WebSocket ("Server sent no subprotocol").
+    image: surrealdb/surrealdb:v2.7.0
     command:
       - start
       - --log
